@@ -1,0 +1,6 @@
+
+target 'SwiftyLine_Example' do
+  
+  pod 'SwiftyLine', :path => '../'
+  
+end
