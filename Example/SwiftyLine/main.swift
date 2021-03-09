@@ -26,18 +26,16 @@ struct MyCommand2: Command {
     
     
     func main() throws {
-        print(good)
     }
 }
 
 struct MyCommand: Command {
     
-    static var key: String {
-        return "cmd"
-    }
-    
-    static var subcommands: [Command.Type]? {
-        return [MyCommand2.self]
+    static var configuration: CommandConfiguration? {
+        var configuration = CommandConfiguration()
+        configuration.subcommands = [MyCommand2.self]
+        configuration.help = "This tool name"
+        return configuration
     }
     
     @arg()
@@ -51,7 +49,6 @@ struct MyCommand: Command {
     
     
     func main() throws {
-        print(good)
     }
 }
 

@@ -8,14 +8,14 @@
 import Foundation
 
 @propertyWrapper
-public struct arg<T>: Explain {
+public struct arg: Explain {
     
     public static var key: String {
         return ""
     }
     
-    public var value: T?
-    public var wrappedValue: T {
+    public var value: String?
+    public var wrappedValue: String {
         get {
             return value!
         }

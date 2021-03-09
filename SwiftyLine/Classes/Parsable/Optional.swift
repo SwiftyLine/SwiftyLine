@@ -8,13 +8,13 @@
 import Foundation
 
 @propertyWrapper
-public struct opt<T>: Explain {
+public struct opt: Explain {
     public static var key: String {
         ""
     }
     
-    public var value: T?
-    public var wrappedValue: T? {
+    public var value: String?
+    public var wrappedValue: String? {
         get {
             return value
         }

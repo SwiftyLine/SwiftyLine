@@ -3,42 +3,27 @@ import Foundation
 
 public struct CommandConfiguration {
     
-    var key: String
+    public var key: String?
     
-    var help: String
+    public var help: String?
     
-    var subcommands: [Command]?
+    public var subcommands: [Command.Type]?
+    
+    public init() { }
     
 }
 
-public protocol Command: Explain {
+public protocol Command {
+    
+    static var configuration: CommandConfiguration? { get }
     
     func main() throws;
     
-    static var subcommands: [Command.Type]? { get }
-    
+    init()
 }
 
 public extension Command {
     
-    static var subcommands: [Command.Type]? { nil }
-}
-
-public extension Command {
-    
-    static func main(_ arguments: [String] = CommandLine.arguments) throws {
-        let cmd = Self()
-        let mirror = Mirror(reflecting: cmd)
-        mirror.children.forEach { (item) in
-            print("\(item.label!): \(item.value)")
-            let mirror = Mirror(reflecting: item.value)
-            mirror.children.forEach { (subitem) in
-                print("\t\(subitem.label!): \(subitem.value)")
-            }
-        }
-        let info = CommandInfo(command: Self.self)
-        print(info)
-        try? cmd.main()
-    }
+    static var configuration: CommandConfiguration? { nil }
     
 }

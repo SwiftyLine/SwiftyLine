@@ -16,30 +16,10 @@ public protocol Explain {
     init()
 }
 
-public protocol ValuePackager {
-    
-    var package: ValuePackage { get set }
-    
-}
-
-public enum ValuePackage {
-    case undefine
-    case value(String)
-}
-
 public extension Explain {
     
     static var help: String? {
         return "No help infomations"
-    }
-    
-}
-
-
-struct ParseResult {
-    
-    func get<T>(for key: String) -> T {
-        return "" as! T
     }
     
 }
