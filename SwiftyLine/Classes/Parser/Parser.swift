@@ -23,7 +23,9 @@ public struct ParseResult {
 struct Parser {
     
     func parse(info: CommandInfo, argv: [String]) -> ParseResult {
-        return ParseResult()
+        var result = ParseResult()
+        var arguments = argv
+        
     }
     
 }

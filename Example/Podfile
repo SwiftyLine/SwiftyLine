@@ -1,6 +1,8 @@
 
 target 'SwiftyLine_Example' do
   
+  platform :osx, '10.10'
+
   pod 'SwiftyLine', :path => '../'
   
 end
