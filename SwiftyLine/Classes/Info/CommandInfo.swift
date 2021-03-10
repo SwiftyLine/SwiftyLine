@@ -10,16 +10,60 @@ import Foundation
 public struct CommandInfo: ComponentInfo {
     
     public var key: String
+    public var command: String {
+        set { key = newValue }
+        get { key }
+    }
     
     public var arguments = [ArgumentInfo]()
-    public var optionals = [ArgumentInfo]()
+//    public var optionals = [ArgumentInfo]()
     
     public var flags = [FlagInfo]()
     
-    public var subcommands: [CommandInfo]?
+    public var subcommands = [CommandInfo]()
     
     public var help: String?
     
+}
+
+extension CommandInfo {
+    
+    public func sub(command: String) -> CommandInfo? {
+        for subcmd in subcommands {
+            if subcmd.command == command {
+                return subcmd
+            }
+        }
+        return nil
+    }
+    
+    public func sub(key: String) -> ComponentInfo? {
+        for arg in arguments {
+            if arg.key == key {
+                return arg
+            }
+        }
+        for flg in flags {
+            if flg.key == key {
+                return flg
+            }
+        }
+        return nil
+    }
+    
+    public func sub(abbr: Character) -> ComponentInfo? {
+        for arg in arguments where arg.abbr != nil {
+            if arg.abbr! == abbr {
+                return arg
+            }
+        }
+        for flg in flags where flg.abbr != nil {
+            if flg.abbr! == abbr {
+                return flg
+            }
+        }
+        return nil
+    }
 }
 
 extension CommandInfo: CustomDebugStringConvertible {
@@ -27,17 +71,21 @@ extension CommandInfo: CustomDebugStringConvertible {
     public var debugDescription: String {
         var debug = ""
         debug.append(self.key + ": {\n")
-        debug.append("\targuments: [\n")
-        for arg in self.arguments {
-            debug.append("\t\t\(arg)\n")
+        if self.arguments.count > 0 {
+            debug.append("\targuments: [\n")
+            for arg in self.arguments {
+                debug.append("\t\t\(arg)\n")
+            }
+            debug.append("\t]\n")
         }
-        debug.append("\t]\n")
-        debug.append("\tflags: [\n")
-        for flag in self.flags {
-            debug.append("\t\t\(flag)\n")
+        if self.flags.count > 0 {
+            debug.append("\tflags: [\n")
+            for flag in self.flags {
+                debug.append("\t\t\(flag)\n")
+            }
+            debug.append("\t]\n")
         }
-        debug.append("\t]\n")
-        if let subcommands = self.subcommands {
+        if self.subcommands.count > 0 {
             debug.append("\tsubcommands: [\n")
             for subcmd in subcommands {
                 let string = "\(subcmd)"

@@ -17,7 +17,7 @@ extension CommandInfo {
         if let key = command.configuration?.key {
             self.key = key
         } else {
-            self.key = "\(command)"
+            self.key = "\(command)".convertedToSnakeCase()
         }
         
         // other configuration
@@ -40,17 +40,17 @@ extension CommandInfo {
         let mirror = Mirror(reflecting: command.init())
         for child in mirror.children {
             if let _ = child.value as? arg {
-                var info = ArgumentInfo(key: child.label!)
+                var info = ArgumentInfo(key: String(child.label!.dropFirst()))
                 info.optional = false
                 self.arguments.append(info)
             }
             else if let _ = child.value as? opt {
-                var info = ArgumentInfo(key: child.label!)
+                var info = ArgumentInfo(key: String(child.label!.dropFirst()))
                 info.optional = true
-                self.optionals.append(info)
+                self.arguments.append(info)
             }
             else if let _ = child.value as? flg {
-                let info = FlagInfo(key: child.label!)
+                let info = FlagInfo(key: String(child.label!.dropFirst()))
                 self.flags.append(info)
             }
         }

@@ -9,16 +9,14 @@ import Foundation
 
 public protocol Explain {
     
-    static var key: String { get }
-    
-    static var help: String? { get }
+    var help: String? { get }
     
     init()
 }
 
 public extension Explain {
     
-    static var help: String? {
+    var help: String? {
         return "No help infomations"
     }
     

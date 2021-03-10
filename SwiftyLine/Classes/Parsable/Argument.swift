@@ -16,12 +16,8 @@ public struct arg: Explain {
     
     public var value: String?
     public var wrappedValue: String {
-        get {
-            return value!
-        }
-        set {
-            value = newValue
-        }
+        set { value = newValue }
+        get { value! }
     }
     
     public func help(_ content: String) -> arg {

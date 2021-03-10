@@ -45,10 +45,11 @@ struct MyCommand: Command {
     var body: String?
     
     @flg()
-    var good: Bool
+    var ijk: Bool
     
     
     func main() throws {
+        print(name)
     }
 }
 
