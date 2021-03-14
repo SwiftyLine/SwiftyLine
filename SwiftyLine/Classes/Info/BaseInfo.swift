@@ -26,3 +26,11 @@ public protocol ArgumentValue {
     init?(argument: String)
     
 }
+
+public enum ParseError: Error {
+    
+    case missingRequiredArguments(ArgumentInfo)
+
+    case missingArgumentsValue(ArgumentInfo)
+    
+}

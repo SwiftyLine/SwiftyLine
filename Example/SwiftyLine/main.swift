@@ -13,21 +13,13 @@ struct MyCommand2: Command {
     
     static var configuration: CommandConfiguration? {
         var configuration = CommandConfiguration()
+        configuration.key = "subcmd"
         configuration.help = "Sub command helper"
         return configuration
     }
     
-    @arg()
-    var name: String
-    
-    @opt()
-    var body: String?
-    
-    @flg()
-    var good: Bool
-    
-    
     func main() throws {
+        print("my command 2")
     }
 }
 
@@ -35,8 +27,8 @@ struct MyCommand: Command {
     
     static var configuration: CommandConfiguration? {
         var configuration = CommandConfiguration()
-        configuration.subcommands = [MyCommand2.self]
         configuration.help = "This tool name"
+        configuration.subcommands = [MyCommand2.self]
         return configuration
     }
     

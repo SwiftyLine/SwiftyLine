@@ -7,14 +7,6 @@
 
 import Foundation
 
-public enum ParseError: Error {
-    
-    case missingRequiredArguments(ArgumentInfo)
-
-    case missingArgumentsValue(ArgumentInfo)
-    
-}
-
 public struct ParseResult {
     
     var command: CommandInfo
@@ -29,6 +21,8 @@ public struct ParseResult {
     
     var error: ParseError?
     
+    public func flag(_ flag: FlagInfo) -> Bool { flags.contains(flag.key) }
+    
 }
 
 extension ParseResult {
@@ -37,7 +31,7 @@ extension ParseResult {
         for argument in self.command.arguments {
             if argument.optional == false {
                 if arguments[argument.key] == nil {
-                    error = ParseError.missingArgumentsValue(argument)
+                    error = ParseError.missingRequiredArguments(argument)
                     break
                 }
             }

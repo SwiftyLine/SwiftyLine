@@ -72,6 +72,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--name name -f"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "subcmd"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

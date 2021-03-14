@@ -45,7 +45,7 @@ extension CommandInfo {
                 return arg
             }
         }
-        for flg in flags {
+        for flg in flags + FlagInfo.defaultFlags {
             if flg.key == key {
                 return flg
             }
