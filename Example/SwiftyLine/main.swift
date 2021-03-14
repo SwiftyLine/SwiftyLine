@@ -11,8 +11,10 @@ import SwiftyLine
 
 struct MyCommand2: Command {
     
-    static var key: String {
-        return "cmd2"
+    static var configuration: CommandConfiguration? {
+        var configuration = CommandConfiguration()
+        configuration.help = "Sub command helper"
+        return configuration
     }
     
     @arg()
@@ -38,18 +40,23 @@ struct MyCommand: Command {
         return configuration
     }
     
-    @arg()
+    @arg(key: "name", abbr: "a", help: "nihao")
     var name: String
     
-    @opt()
+    @opt(help: "Body description")
     var body: String?
     
-    @flg()
+    @flg(key: "ijk", abbr: "f", help: "Flag Helper")
     var ijk: Bool
     
-    
     func main() throws {
-        print(name)
+        print("Input name = \(name)")
+        if let body = self.body {
+            print("Input body = \(body)")
+        }
+        if ijk {
+            print("Input ijk")
+        }
     }
 }
 

@@ -13,7 +13,7 @@ public struct CommandConfiguration {
     
 }
 
-public protocol Command {
+public protocol Command: Decodable {
     
     static var configuration: CommandConfiguration? { get }
     

@@ -20,3 +20,9 @@ public extension ComponentInfo {
     var help: String? { nil }
     
 }
+
+public protocol ArgumentValue {
+    
+    init?(argument: String)
+    
+}

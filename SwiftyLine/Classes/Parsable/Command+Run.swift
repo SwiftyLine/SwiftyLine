@@ -9,41 +9,19 @@
 
 import Foundation
 
-extension Command {
-    
-    init(result: ParseResult) {
-        self.init()
-        var mirror = Mirror(reflecting: self)
-//        for var child in mirror.children {
-//            let label = String(child.label!.dropFirst())
-//            let value = result.arguments[label]
-//            child.value = value
-//        }
-        for (key, value) in result.arguments {
-            mirror.set(key: key, value: value)
-//            if let child = mirror.child(label: key) {
-//                if var arg = child.value as? arg {
-//                    arg.value = value
-//                }
-//            }
-        }
-    }
-    
-}
-
-
 public extension Command {
     
     static func main(_ arguments: [String] = CommandLine.arguments) throws {
         let info = CommandInfo(command: Self.self)
-        let result = Parser().parse(info: info, argv: arguments)
-        print(info)
-        print(result)
+        let result = info.parse(argv: arguments)
         if result.error != nil {
-            
+            let helper = CommandHelper.current
+            let string = helper.helpBanner(for: result.command)
+            print(string)
         } else {
-            let cmd = Self.init(result: result)
-            try? cmd.main()
+            let decoder = CommandDecoder(result: result)
+            let cmd = try? Self.init(from: decoder)
+            try? cmd?.main()
         }
     }
     

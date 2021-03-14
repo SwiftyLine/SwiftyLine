@@ -9,14 +9,16 @@ import Foundation
 
 public struct CommandInfo: ComponentInfo {
     
-    public var key: String
+    public var key: String {
+        return self.keyPath.last!
+    }
     public var command: String {
-        set { key = newValue }
         get { key }
     }
     
+    public var keyPath: [String]
+    
     public var arguments = [ArgumentInfo]()
-//    public var optionals = [ArgumentInfo]()
     
     public var flags = [FlagInfo]()
     

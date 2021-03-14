@@ -8,23 +8,25 @@
 import Foundation
 
 @propertyWrapper
-public struct flg: Explain {
+public struct flg: Explain, Decodable {
     
-    public static var key: String {
-        ""
-    }
+    public var wrappedValue: Bool = false
     
-    public var value: Bool = false
-    public var wrappedValue: Bool {
-        get {
-            return value
-        }
-        set {
-            value = newValue
+    public init() {}
+    
+    public init(from decoder: Decoder) throws {
+        if let _decoder = decoder as? ArgumentDecoder {
+            self.wrappedValue = _decoder.flag
         }
     }
     
-    public init() {
-        
+    public var key: String?
+    public var abbr: Character?
+    public var help: String?
+    
+    public init(key: String? = nil, abbr: Character? = nil, help: String? = nil) {
+        self.key = key
+        self.abbr = abbr
+        self.help = help
     }
 }

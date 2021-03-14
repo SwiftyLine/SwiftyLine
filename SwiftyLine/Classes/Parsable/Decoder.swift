@@ -9,12 +9,14 @@ import Foundation
 
 final class CommandDecoder: Decoder {
     
+    var result: ParseResult
+    
     var codingPath: [CodingKey] = []
     
     var userInfo: [CodingUserInfoKey : Any] = [:]
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-        return KeyedDecodingContainer(CommandKeyedDecodingContainer(codingPath: [CodingKey]()))
+        return KeyedDecodingContainer(CommandKeyedDecodingContainer(codingPath: [], result: result))
     }
     
     func unkeyedContainer() throws -> UnkeyedDecodingContainer {
@@ -25,7 +27,8 @@ final class CommandDecoder: Decoder {
         throw Error.topLevelHasNoSingleValueContainer
     }
     
-    init() {
+    init(result: ParseResult) {
+        self.result = result
     }
 }
 
@@ -39,13 +42,15 @@ extension CommandDecoder {
 final class CommandKeyedDecodingContainer<K>: KeyedDecodingContainerProtocol where K : CodingKey  {
     
     var codingPath: [CodingKey]
+    let result: ParseResult
     
     var allKeys: [K] {
         fatalError()
     }
     
-    init(codingPath: [CodingKey]) {
+    init(codingPath: [CodingKey], result: ParseResult) {
         self.codingPath = codingPath
+        self.result = result
     }
     
     func contains(_ key: K) -> Bool {
@@ -57,7 +62,8 @@ final class CommandKeyedDecodingContainer<K>: KeyedDecodingContainerProtocol whe
     }
     
     func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
-        return try! T.init(from: try! self.superDecoder())
+        let decoder = ArgumentDecoder(codingPath: codingPath + [key], result: result)
+        return try! T.init(from: decoder)
     }
     
     func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -76,6 +82,43 @@ final class CommandKeyedDecodingContainer<K>: KeyedDecodingContainerProtocol whe
         fatalError()
     }
     
-//    typealias Key = K
+}
+
+final class ArgumentDecoder: Decoder {
+    
+    var codingPath: [CodingKey]
+    
+    var userInfo: [CodingUserInfoKey : Any] = [:]
+    
+    let result: ParseResult
+    
+    var key: String {
+        return codingPath.last!.stringValue
+    }
+    
+    var value: Any? {
+        return result.arguments[key]
+    }
+    
+    var flag: Bool {
+        return result.flags.contains(key)
+    }
+    
+    func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
+        fatalError()
+    }
+    
+    func unkeyedContainer() throws -> UnkeyedDecodingContainer {
+        fatalError()
+    }
+    
+    func singleValueContainer() throws -> SingleValueDecodingContainer {
+        fatalError()
+    }
+    
+    init(codingPath: [CodingKey], result: ParseResult) {
+        self.codingPath = codingPath
+        self.result = result
+    }
     
 }

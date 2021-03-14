@@ -17,8 +17,9 @@ public enum ParseError: Error {
 
 public struct ParseResult {
     
-    var commands = [String]()
+    var command: CommandInfo
     
+    var commandPath = [String]()
     
     var arguments = [String: String]()
     
@@ -30,18 +31,35 @@ public struct ParseResult {
     
 }
 
-struct Parser {
+extension ParseResult {
     
-    func parse(info: CommandInfo, argv: [String]) -> ParseResult {
-        var result = ParseResult()
+    mutating func valid() -> ParseResult {
+        for argument in self.command.arguments {
+            if argument.optional == false {
+                if arguments[argument.key] == nil {
+                    error = ParseError.missingArgumentsValue(argument)
+                    break
+                }
+            }
+        }
+        return self
+    }
+    
+}
+
+extension CommandInfo {
+    
+    func parse(argv: [String]) -> ParseResult {
+        var result = ParseResult(command: self)
         var arguments = Array(argv.dropFirst())
-        result.commands.append(info.command)
+        result.commandPath.append(command)
         
-        var targetCmd = info
+        var targetCmd = self
         while let name = arguments.first, let cmd = targetCmd.sub(command: name) {
             arguments.removeFirst()
             targetCmd = cmd
-            result.commands.append(name)
+            result.command = targetCmd
+            result.commandPath.append(name)
         }
         
         while arguments.count > 0 {
@@ -94,7 +112,7 @@ struct Parser {
             result.values.append(current)
         }
         
-        return result
+        return result.valid()
     }
     
 }
