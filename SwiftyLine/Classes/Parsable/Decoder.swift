@@ -92,6 +92,8 @@ final class ArgumentDecoder: Decoder {
     
     let result: ParseResult
     
+    let coding: [String: Any]
+    
     var key: String {
         return codingPath.last!.stringValue
     }
@@ -119,6 +121,8 @@ final class ArgumentDecoder: Decoder {
     init(codingPath: [CodingKey], result: ParseResult) {
         self.codingPath = codingPath
         self.result = result
+        var coding = [String: Any]()
+        self.coding = coding
     }
     
 }

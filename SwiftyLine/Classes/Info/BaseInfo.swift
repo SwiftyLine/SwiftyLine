@@ -13,6 +13,8 @@ public protocol ComponentInfo {
     
     var help: String? { get }
     
+    var userInfo: [String: Any] { get set }
+    
 }
 
 public extension ComponentInfo {

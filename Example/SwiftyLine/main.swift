@@ -32,17 +32,21 @@ struct MyCommand: Command {
         return configuration
     }
     
-    @arg(key: "name", abbr: "a", help: "nihao")
+    @arg(key: "fakename", abbr: "a", help: "nihao")
     var name: String
+    
+    @arg(mode: .value, help: "Value")
+    var subname: String
     
     @opt(help: "Body description")
     var body: String?
     
-    @flg(key: "ijk", abbr: "f", help: "Flag Helper")
+    @flg(key: "abc", abbr: "f", help: "Flag Helper")
     var ijk: Bool
     
     func main() throws {
         print("Input name = \(name)")
+        print("Sub name = \(subname)")
         if let body = self.body {
             print("Input body = \(body)")
         }

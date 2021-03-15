@@ -22,9 +22,13 @@ public struct CommandInfo: ComponentInfo {
     
     public var flags = [FlagInfo]()
     
+    public var values = [ValueInfo]()
+    
     public var subcommands = [CommandInfo]()
     
     public var help: String?
+    
+    public var userInfo: [String: Any] = [:]
     
 }
 

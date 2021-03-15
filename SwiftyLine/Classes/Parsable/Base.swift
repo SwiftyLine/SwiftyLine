@@ -21,3 +21,7 @@ public extension Explain {
     }
     
 }
+
+public enum Mode {
+    case keyed, value
+}

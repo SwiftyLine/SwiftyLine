@@ -21,11 +21,13 @@ public struct arg: Explain, Decodable {
         self.wrappedValue = single.value as! String
     }
     
+    public var mode: Mode = .keyed
     public var key: String?
     public var abbr: Character?
     public var help: String?
     
-    public init(key: String? = nil, abbr: Character? = nil, help: String? = nil) {
+    public init(mode: Mode = .keyed, key: String? = nil, abbr: Character? = nil, help: String? = nil) {
+        self.mode = mode
         self.key = key
         self.abbr = abbr
         self.help = help

@@ -15,6 +15,8 @@ public struct FlagInfo: ComponentInfo {
     
     public var help: String?
     
+    public var userInfo: [String: Any] = [:]
+    
     public static var silent = FlagInfo(key: "silent", abbr: nil, help: "Show nothing")
     
     public static var version = FlagInfo(key: "version", abbr: nil, help: "Show the version of the tool")

@@ -71,12 +71,12 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "--name name -f"
-            isEnabled = "NO">
+            argument = "--fakename name -f --subname subname"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "subcmd"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

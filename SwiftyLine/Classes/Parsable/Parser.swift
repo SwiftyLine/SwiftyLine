@@ -17,7 +17,8 @@ public struct ParseResult {
     
     var flags = [String]()
     
-    var values = [String]()
+    var keyedValues = [String:String]()
+    var unkeyValues = [String]()
     
     var error: ParseError?
     
@@ -30,7 +31,7 @@ extension ParseResult {
     mutating func valid() -> ParseResult {
         for argument in self.command.arguments {
             if argument.optional == false {
-                if arguments[argument.key] == nil {
+                if arguments[argument.originKey] == nil {
                     error = ParseError.missingRequiredArguments(argument)
                     break
                 }
@@ -74,7 +75,7 @@ extension CommandInfo {
                                 break
                             } else {
                                 let value = arguments.removeFirst()
-                                result.arguments[arg.key] = value
+                                result.arguments[arg.originKey] = value
                             }
                         }
                         else if let flg = info as? FlagInfo {
@@ -93,7 +94,7 @@ extension CommandInfo {
                             break
                         } else {
                             let value = arguments.removeFirst()
-                            result.arguments[arg.key] = value
+                            result.arguments[arg.originKey] = value
                         }
                     }
                     else if let flg = info as? FlagInfo {
@@ -103,7 +104,12 @@ extension CommandInfo {
                 }
             }
             // value
-            result.values.append(current)
+            if result.keyedValues.count < targetCmd.values.count {
+                let info = targetCmd.values[result.keyedValues.count]
+                result.keyedValues[info.originKey] = current
+            } else {
+                result.unkeyValues.append(current)
+            }
         }
         
         return result.valid()
