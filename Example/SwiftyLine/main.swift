@@ -32,10 +32,10 @@ struct MyCommand: Command {
         return configuration
     }
     
-    @arg(key: "fakename", abbr: "a", help: "nihao")
+    @arg(key: .named("fakenamaaae"), abbr: "a", help: "nihao")
     var name: String
     
-    @arg(mode: .value, help: "Value")
+    @arg(key: .null, help: "Value")
     var subname: String
     
     @opt(help: "Body description")

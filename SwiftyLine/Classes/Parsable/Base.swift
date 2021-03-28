@@ -22,6 +22,7 @@ public extension Explain {
     
 }
 
-public enum Mode {
-    case keyed, value
+public enum Key {
+    case null
+    case named(String?)
 }

@@ -22,13 +22,11 @@ public struct opt: Explain, Decodable {
         }
     }
     
-    public var mode: Mode = .keyed
-    public var key: String?
+    public var key: Key?
     public var abbr: Character?
     public var help: String?
     
-    public init(mode: Mode = .keyed, key: String? = nil, abbr: Character? = nil, help: String? = nil) {
-        self.mode = mode
+    public init(key: Key? = nil, abbr: Character? = nil, help: String? = nil) {
         self.key = key
         self.abbr = abbr
         self.help = help

@@ -42,34 +42,34 @@ extension CommandInfo {
         for child in mirror.children {
             guard let label = child.label?.dropFirst() else { continue }
             let originKey = String(label)
-            if let arg = child.value as? arg {
-                if arg.mode == .keyed {
-                    var info = ArgumentInfo(key: arg.key ?? originKey)
+            if let item = child.value as? arg {
+                if case let .named(key) = item.key {
+                    var info = ArgumentInfo(key: key ?? originKey)
                     info.optional = false
-                    info.abbr = arg.abbr
-                    info.help = arg.help
+                    info.abbr = item.abbr
+                    info.help = item.help
                     info.originKey = originKey
                     self.arguments.append(info)
                 } else {
                     var info = ValueInfo(key: originKey)
                     info.optional = false
-                    info.help = arg.help
+                    info.help = item.help
                     info.originKey = originKey
                     self.values.append(info)
                 }
             }
-            else if let opt = child.value as? opt {
-                if opt.mode == .keyed {
-                    var info = ArgumentInfo(key: opt.key ?? originKey)
+            else if let item = child.value as? opt {
+                if case let .named(key) = item.key {
+                    var info = ArgumentInfo(key: key ?? originKey)
                     info.optional = true
-                    info.abbr = opt.abbr
-                    info.help = opt.help
+                    info.abbr = item.abbr
+                    info.help = item.help
                     info.originKey = originKey
                     self.arguments.append(info)
                 } else {
                     var info = ValueInfo(key: originKey)
                     info.optional = false
-                    info.help = opt.help
+                    info.help = item.help
                     info.originKey = originKey
                     self.values.append(info)
                 }
