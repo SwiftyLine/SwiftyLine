@@ -1,5 +1,19 @@
 PODS:
-  - SwiftyLine (0.1.0)
+  - SwiftyLine (0.1.0):
+    - SwiftyLine/Help (= 0.1.0)
+    - SwiftyLine/Info (= 0.1.0)
+    - SwiftyLine/Operation (= 0.1.0)
+    - SwiftyLine/Parsable (= 0.1.0)
+    - SwiftyLine/Utils (= 0.1.0)
+  - SwiftyLine/Help (0.1.0):
+    - SwiftyLine/Info
+    - SwiftyLine/Operation
+  - SwiftyLine/Info (0.1.0):
+    - SwiftyLine/Operation
+  - SwiftyLine/Operation (0.1.0)
+  - SwiftyLine/Parsable (0.1.0):
+    - SwiftyLine/Info
+  - SwiftyLine/Utils (0.1.0)
 
 DEPENDENCIES:
   - SwiftyLine (from `../`)
@@ -9,7 +23,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  SwiftyLine: 87210c90b338114ecfe7891df0ad58875bcdaa22
+  SwiftyLine: 0f573d6c14c589e08f0d0b1075f169049092a03e
 
 PODFILE CHECKSUM: 5efe6f9abda6c65858f2eab931efd30b2a07cfcb
 

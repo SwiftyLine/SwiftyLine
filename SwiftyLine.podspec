@@ -31,8 +31,6 @@ TODO: Add long description of the pod here.
   s.platform = :osx
   s.osx.deployment_target = "10.10"
 
-  s.source_files = 'SwiftyLine/Classes/**/*'
-
   # s.resource_bundles = {
   #   'SwiftyLine' => ['SwiftyLine/Assets/*.png']
   # }
@@ -40,4 +38,30 @@ TODO: Add long description of the pod here.
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'Cocoa'
   # s.dependency 'AFNetworking', '~> 2.3'
+  
+  s.subspec 'Operation' do |ss|
+      ss.source_files = 'SwiftyLine/Operation/**/*.swift'
+  end
+  
+  s.subspec 'Utils' do |ss|
+      ss.source_files = 'SwiftyLine/Utils/**/*.swift'
+  end
+  
+  s.subspec 'Info' do |ss|
+      ss.source_files = 'SwiftyLine/Info/**/*.swift'
+      ss.dependency 'SwiftyLine/Operation'
+  end
+  
+  s.subspec 'Help' do |ss|
+      ss.source_files = 'SwiftyLine/Help/**/*.swift'
+      ss.dependency 'SwiftyLine/Operation'
+      ss.dependency 'SwiftyLine/Info'
+  end
+  
+  s.subspec 'Parsable' do |ss|
+      ss.source_files = 'SwiftyLine/Parsable/**/*.swift'
+      ss.dependency 'SwiftyLine/Info'
+      ss.dependency 'SwiftyLine/Utils'
+  end
+  
 end
