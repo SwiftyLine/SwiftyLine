@@ -11,7 +11,7 @@ import SwiftyLine
 
 struct MyCommand2: Command {
     
-    static var configuration: CommandConfiguration? {
+    static var configuration: CommandConfiguration {
         var configuration = CommandConfiguration()
         configuration.key = "subcmd"
         configuration.help = "Sub command helper"
@@ -25,7 +25,7 @@ struct MyCommand2: Command {
 
 struct MyCommand: Command {
     
-    static var configuration: CommandConfiguration? {
+    static var configuration: CommandConfiguration {
         var configuration = CommandConfiguration()
         configuration.help = "This tool name"
         configuration.subcommands = [MyCommand2.self]

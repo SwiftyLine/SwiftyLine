@@ -58,11 +58,78 @@ public struct CocoaPodsHelper: HelpProvider {
         }
     }
     
+    struct Node {
+        
+        var subnodes = [Node]()
+        
+        var content: Content
+        
+        var _abbr = false
+        var abbr: Bool {
+            set {
+                if _abbr || !newValue {
+                    return
+                }
+                _abbr = newValue
+                subnodes = subnodes.map({ (node) -> Node in
+                    var _node = node
+                    _node.abbr = newValue
+                    return node
+                })
+            }
+            get { _abbr }
+        }
+        
+        
+        var maxLength: Int {
+            if subnodes.count > 0 {
+                return subnodes.reduce(0) { (result, node) -> Int in
+                    return max(result, node.maxLength)
+                }
+            }
+            switch content {
+            case .root:
+                return 0
+            case .newline:
+                return 0
+            case .section(let title):
+                return title.count
+            case .commandUsage(let commands):
+                return commands.joined(separator: " ").count + 2
+            case .commandDetail(let detail):
+                return detail.count
+            case .subcommand(let left, _):
+                return left.count
+            case .argument(_, let keyed, _):
+                if self.abbr {
+                    return keyed.count + 3
+                } else {
+                    return keyed.count
+                }
+            }
+        }
+        
+        enum Content {
+            case root
+            case newline
+            case section(String)
+            case commandUsage([String])
+            case commandDetail(String)
+            case subcommand(String, String)
+            case argument(Character?, String, String)
+        }
+    }
+    
+    var root = Node(content: .root)
+    
     let title = OperationString.Builder(style: [.underline])
     let green = OperationString.Builder(style: [.green])
     let blue = OperationString.Builder(style: [.blue])
     
-    func usage(for command: CommandInfo) -> String {
+    mutating func usage(for command: CommandInfo) -> String {
+        var usageNode = Node(content: .section("Usage"))
+        usageNode.subnodes.append(Node(content: .commandUsage(command.keyPath)))
+        
         let keyPath = command.keyPath.joined(separator: " ")
         
         var string = ""
@@ -72,11 +139,14 @@ public struct CocoaPodsHelper: HelpProvider {
         if let help = command.help {
             string.appendln()
             string.appendln("    \(help)")
+            usageNode.subnodes.append(Node(content: .commandDetail(help)))
         }
+        
+        root.subnodes.append(usageNode)
         return string
     }
     
-    func commands(for command: CommandInfo) -> String {
+    mutating func commands(for command: CommandInfo) -> String {
         var string = ""
         if command.subcommands.count > 0 {
             string.appendln(title.build("Commands:"))
@@ -187,7 +257,7 @@ public struct CocoaPodsHelper: HelpProvider {
         return string
     }
     
-    public func helpBanner(for command: CommandInfo) -> String {
+    mutating public func helpBanner(for command: CommandInfo) -> String {
         
         var sections = [String]()
         

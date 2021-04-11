@@ -15,7 +15,7 @@ public struct CommandConfiguration {
 
 public protocol Command: Decodable {
     
-    static var configuration: CommandConfiguration? { get }
+    static var configuration: CommandConfiguration { get }
     
     func main() throws;
     
@@ -24,13 +24,12 @@ public protocol Command: Decodable {
 
 public extension Command {
     
-    static var configuration: CommandConfiguration? { nil }
+    static var configuration: CommandConfiguration { CommandConfiguration() }
     
-    static var command: String { configuration?.key ?? "\(self)".convertedToSnakeCase() }
+    static var command: String { configuration.key ?? "\(self)".convertedToSnakeCase() }
     
     static func subcommand(for command: String) -> Command.Type? {
-        guard let configuration = self.configuration else { return nil }
-        guard let subcommands = configuration.subcommands else { return nil }
+        guard let subcommands = self.configuration.subcommands else { return nil }
         for subcommand in subcommands {
             if subcommand.command == command {
                 return subcommand
