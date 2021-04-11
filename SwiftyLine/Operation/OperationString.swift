@@ -45,6 +45,9 @@ extension OperationString: CustomStringConvertible {
 extension Array where Element == OperationString.Style {
     
     var text: String {
+        if ProcessInfo.processInfo.isAttached {
+            return ""
+        }
         if count == 0 {
             return "\u{001B}[0m"
         }

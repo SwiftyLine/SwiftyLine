@@ -42,42 +42,45 @@ extension CommandInfo {
         for child in mirror.children {
             guard let label = child.label?.dropFirst() else { continue }
             let originKey = String(label)
-            if let item = child.value as? arg {
-                if case let .named(key) = item.key {
+            if let item = child.value as? Require {
+                let configuration = item.configuration
+                if case let .named(key) = configuration.key {
                     var info = ArgumentInfo(key: key ?? originKey)
                     info.optional = false
-                    info.abbr = item.abbr
-                    info.help = item.help
+                    info.abbr = configuration.abbr
+                    info.help = configuration.help
                     info.originKey = originKey
                     self.arguments.append(info)
                 } else {
                     var info = ValueInfo(key: originKey)
                     info.optional = false
-                    info.help = item.help
+                    info.help = configuration.help
                     info.originKey = originKey
                     self.values.append(info)
                 }
             }
-            else if let item = child.value as? opt {
-                if case let .named(key) = item.key {
+            else if let item = child.value as? Optional {
+                let configuration = item.configuration
+                if case let .named(key) = configuration.key {
                     var info = ArgumentInfo(key: key ?? originKey)
                     info.optional = true
-                    info.abbr = item.abbr
-                    info.help = item.help
+                    info.abbr = configuration.abbr
+                    info.help = configuration.help
                     info.originKey = originKey
                     self.arguments.append(info)
                 } else {
                     var info = ValueInfo(key: originKey)
                     info.optional = false
-                    info.help = item.help
+                    info.help = configuration.help
                     info.originKey = originKey
                     self.values.append(info)
                 }
             }
-            else if let flag = child.value as? flg {
-                var info = FlagInfo(key: flag.key ?? originKey)
-                info.abbr = flag.abbr
-                info.help = flag.help
+            else if let flag = child.value as? Flag {
+                let config = flag.configuration
+                var info = FlagInfo(key: config.key ?? originKey)
+                info.abbr = config.abbr
+                info.help = config.help
                 info.originKey = originKey
                 self.flags.append(info)
             }

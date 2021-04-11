@@ -32,22 +32,27 @@ struct MyCommand: Command {
         return configuration
     }
     
-    @arg(key: .named("fakenamaaae"), abbr: "a", help: "nihao")
+    @Require(key: .named("fakenamaaae"), abbr: "a", help: "nihao")
     var name: String
     
-    @arg(key: .null, help: "Value")
+    @Require(key: .null, help: "Value")
     var subname: String
     
-    @opt(help: "Body description")
-    var body: String?
+    @Optional({
+        let config = ArgumentConfiguration()
+        config.abbr("a")
+        config.help("nihao")
+        return config
+    })
+    var body1: String?
     
-    @flg(key: "abc", abbr: "f", help: "Flag Helper")
+    @Flag(key: "abc", abbr: "f", help: "Flag Helper")
     var ijk: Bool
     
     func main() throws {
         print("Input name = \(name)")
         print("Sub name = \(subname)")
-        if let body = self.body {
+        if let body = self.body1 {
             print("Input body = \(body)")
         }
         if ijk {
