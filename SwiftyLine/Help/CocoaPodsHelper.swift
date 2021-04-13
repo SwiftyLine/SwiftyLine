@@ -7,6 +7,8 @@
 
 import Foundation
 
+let HELP_TAB = "    "
+
 extension String {
     
     mutating func appendln(_ string: CustomStringConvertible = "") {
@@ -82,201 +84,185 @@ public struct CocoaPodsHelper: HelpProvider {
         
         
         var maxLength: Int {
+            var maxLength = 0
             if subnodes.count > 0 {
-                return subnodes.reduce(0) { (result, node) -> Int in
+                maxLength = subnodes.reduce(maxLength) { (result, node) -> Int in
                     return max(result, node.maxLength)
                 }
             }
+            var currentLength = 0
             switch content {
             case .root:
-                return 0
+                currentLength = 0
             case .newline:
-                return 0
-            case .section(let title):
-                return title.count
-            case .commandUsage(let commands):
-                return commands.joined(separator: " ").count + 2
-            case .commandDetail(let detail):
-                return detail.count
+                currentLength = 0
+            case .section(_, _):
+                currentLength = 0
+            case .commandUsage(_):
+                currentLength = 0
+            case .commandDetail(_):
+                currentLength = 0
             case .subcommand(let left, _):
-                return left.count
+                return left.count + 2
             case .argument(_, let keyed, _):
                 if self.abbr {
-                    return keyed.count + 3
+                    currentLength = keyed.count + 5
                 } else {
-                    return keyed.count
+                    currentLength = keyed.count + 2
                 }
             }
+            return max(currentLength, maxLength)
         }
         
         enum Content {
             case root
             case newline
-            case section(String)
+            case section(String, Bool)
             case commandUsage([String])
             case commandDetail(String)
-            case subcommand(String, String)
-            case argument(Character?, String, String)
+            case subcommand(String, String?)
+            case argument(Character?, String, String?)
         }
     }
-    
-    var root = Node(content: .root)
     
     let title = OperationString.Builder(style: [.underline])
     let green = OperationString.Builder(style: [.green])
     let blue = OperationString.Builder(style: [.blue])
     
-    mutating func usage(for command: CommandInfo) -> String {
-        var usageNode = Node(content: .section("Usage"))
+    func usage(for command: CommandInfo) -> Node {
+        var usageNode = Node(content: .section("Usage", true))
         usageNode.subnodes.append(Node(content: .commandUsage(command.keyPath)))
-        
-        let keyPath = command.keyPath.joined(separator: " ")
-        
-        var string = ""
-        string.appendln(title.build("Usage:"))
-        string.appendln()
-        string.appendln("    $ \(green.build(keyPath))")
         if let help = command.help {
-            string.appendln()
-            string.appendln("    \(help)")
             usageNode.subnodes.append(Node(content: .commandDetail(help)))
         }
         
-        root.subnodes.append(usageNode)
-        return string
+        return usageNode
     }
     
-    mutating func commands(for command: CommandInfo) -> String {
-        var string = ""
+    func commands(for command: CommandInfo) -> Node? {
+        var node: Node?
         if command.subcommands.count > 0 {
-            string.appendln(title.build("Commands:"))
-            string.appendln()
-            var table = Table()
+            var _node = Node(content: .section("Commands:", false))
             for subcmd in command.subcommands {
-                table.append(key: subcmd.key)
+                _node.subnodes.append(Node(content: .subcommand(subcmd.key, subcmd.help)))
             }
-            table.rows.forEach { (row) in
-                var key = row.key
-                key.append(count: table.maxCount)
-                let value = row.value
-                string.appendln("    \(green.build("+ " + key))   \(value)")
-            }
+            node = _node
         }
-        return string
+        return node
     }
     
-    func require(for command: CommandInfo) -> String {
-        var string = ""
+    func require(for command: CommandInfo) -> Node? {
+        var node: Node?
         let requires = command.arguments.filter { (argument) -> Bool in
             return argument.optional == false
         }
         
         if requires.count != 0 {
-            string.appendln(title.build("Require:"))
-            string.appendln()
-            var containsAbbr = false
-            var table = Table()
+            var _node = Node(content: .section("Require:", false))
             for arg in requires {
-                var key = ""
-                if let abbr = arg.abbr {
-                    containsAbbr = true
-                    key.append("-\(abbr)|")
-                } else {
-                    key.append("   ")
-                }
-                key.append("--\(arg.key)")
-                table.append(key: key, value: arg.help)
+                _node.subnodes.append(Node(content: .argument(arg.abbr, arg.key, arg.help)))
             }
-            table.rows.forEach { (row) in
-                var key = row.key
-                key.append(count: table.maxCount)
-                string.appendln(" \(containsAbbr ? "   " : "")\(blue.build(key))   \(row.value)")
-            }
+            node = _node
         }
         
-        return string
+        return node
     }
     
-    func options(for command: CommandInfo) -> String {
-        var string = ""
+    func options(for command: CommandInfo) -> Node? {
+        var node: Node?
         let optionals = command.arguments.filter { (argument) -> Bool in
             return argument.optional
         }
         
-        string.appendln(title.build("Options:"))
-        
         if optionals.count + command.flags.count > 0 {
-            var containsAbbr = false
-            var table = Table()
-            
-            string.appendln()
+            var _node = Node(content: .section("Options:", false))
             for arg in optionals {
-                var key = ""
-                if let abbr = arg.abbr {
-                    containsAbbr = true
-                    key.append("-\(abbr)|")
-                } else {
-                    key.append("   ")
-                }
-                key.append("--\(arg.key)")
-                table.append(key: key, value: arg.help)
+                _node.subnodes.append(Node(content: .argument(arg.abbr, arg.key, arg.help)))
             }
             for flag in command.flags {
-                var key = ""
-                if let abbr = flag.abbr {
-                    containsAbbr = true
-                    key.append("-\(abbr)|")
-                } else {
-                    key.append("   ")
-                }
-                key.append("--\(flag.key)")
-                table.append(key: key, value: flag.help)
+                _node.subnodes.append(Node(content: .argument(flag.abbr, flag.key, flag.help)))
             }
-            table.rows.forEach { (row) in
-                var key = row.key
-                key.append(count: table.maxCount)
-                string.appendln(" \(containsAbbr ? "   " : "")\(blue.build(key))   \(row.value)")
-            }
+            node = _node
         }
         
-        return string
+        return node
     }
     
-    func defaultFlags(for command: CommandInfo) -> String {
-        var string = ""
-        var table = Table()
+    func defaultFlags(for command: CommandInfo, optionsNode: Node?) -> Node {
+        var node = Node(content: .section("Options:", false))
+        if let lastNode = optionsNode {
+            node = lastNode
+            node.subnodes.append(Node(content: .newline))
+        }
         for flag in FlagInfo.defaultFlags {
-            let key = "--\(flag.key)"
-            table.append(key: key, value: flag.help)
+            node.subnodes.append(Node(content: .argument(nil, flag.key, flag.help)))
         }
-        table.rows.forEach { (row) in
-            var key = row.key
-            key.append(count: table.maxCount)
-            string.appendln("    \(blue.build(key))   \(row.value)")
-        }
-        return string
+        return node
     }
     
-    mutating public func helpBanner(for command: CommandInfo) -> String {
+    public func helpBanner(for command: CommandInfo) -> String {
         
-        var sections = [String]()
+        var root = Node(content: .root)
         
         // Usage:
-        sections.append(usage(for: command))
+        root.subnodes.append(usage(for: command))
         
         // Commands:
-        sections.append(commands(for: command))
+        if let commands = commands(for: command) {
+            root.subnodes.append(commands)
+        }
         
         // Require:
-        sections.append(require(for: command))
+        if let require = require(for: command) {
+            root.subnodes.append(require)
+        }
         
         // Options
-        sections.append(options(for: command))
+        let optionsNode: Node? = options(for: command)
         
         // Default Flags
-        sections.append(defaultFlags(for: command))
+        let options = defaultFlags(for: command, optionsNode: optionsNode)
+        root.subnodes.append(options)
         
-        return sections.filter({ $0.count > 0 }).joined(separator: "\n")
+        //        return sections.filter({ $0.count > 0 }).joined(separator: "\n")
+        return toString(from: root, abbr: root.abbr, maxLength: root.maxLength)
+    }
+    
+    func toString(from root: Node, abbr: Bool, maxLength: Int) -> String {
+        var string = ""
+        switch root.content {
+        case .root:
+            let lines = root.subnodes.map { (node) -> String in
+                self.toString(from: node, abbr: abbr, maxLength: maxLength)
+            }
+            string = lines.joined(separator: "\n\n")
+        case .newline:
+            string = ""
+        case .section(let title, let space):
+            string = self.title.build(title).description
+            let lines = root.subnodes.map { (node) -> String in
+                self.toString(from: node, abbr: abbr, maxLength: maxLength)
+            }
+            string = string + "\n\n" + lines.joined(separator: space ? "\n\n" : "\n")
+        case .commandUsage(let cmd):
+            string = HELP_TAB + "$ " + self.green.build(cmd.joined(separator: " ")).description
+        case .commandDetail(let detail):
+            string = HELP_TAB + "  " + detail
+        case .subcommand(let left, let right):
+            string = HELP_TAB + green.build(toMaxLength("+ " + left, length: maxLength)).description + "   " + (right ?? "")
+        case .argument(let _abbr, let keyed, let help):
+            let abbrStr = abbr ? ((_abbr != nil) ? "-\(_abbr!)|" : "   ") : ""
+            string = HELP_TAB + blue.build(toMaxLength(abbrStr + "--" + keyed, length: maxLength)).description + "   " + (help ?? "")
+        }
+        return string
+    }
+    
+    func toMaxLength(_ string: String, length: Int) -> String {
+        var str = string
+        while str.count < length {
+            str = str + " "
+        }
+        return str
     }
     
 }
