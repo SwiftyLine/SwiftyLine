@@ -9,56 +9,7 @@ import Foundation
 
 let HELP_TAB = "    "
 
-extension String {
-    
-    mutating func appendln(_ string: CustomStringConvertible = "") {
-        self.append("\(string)")
-        self.append("\n")
-    }
-    
-    mutating func append(character: Character = " ", count: Int) {
-        while self.count < count {
-            self.append(character)
-        }
-    }
-}
-
 public struct CocoaPodsHelper: HelpProvider {
-    
-    struct Table {
-        
-        struct Row {
-            var cols: [String]
-            var key: String {
-                get { cols.first! }
-                set { cols[0] = newValue }
-            }
-            var value: String {
-                get { cols.last! }
-                set { cols[1] = newValue }
-            }
-        }
-        var rows: [Row] = []
-        
-        var maxCount = 0
-        
-        mutating func append(row: Row) {
-            rows.append(row)
-            if let count = row.cols.first?.count {
-                if count > maxCount {
-                    maxCount = count
-                }
-            }
-        }
-        
-        mutating func append(cols: [String]) {
-            self.append(row: Row(cols: cols))
-        }
-        
-        mutating func append(key: String, value: String? = nil) {
-            self.append(row: Row(cols: [key, value ?? ""]))
-        }
-    }
     
     struct Node {
         
@@ -66,28 +17,23 @@ public struct CocoaPodsHelper: HelpProvider {
         
         var content: Content
         
-        var _abbr = false
         var abbr: Bool {
-            set {
-                if _abbr || !newValue {
-                    return
+            for subnode in subnodes {
+                if subnode.abbr {
+                    return true
                 }
-                _abbr = newValue
-                subnodes = subnodes.map({ (node) -> Node in
-                    var _node = node
-                    _node.abbr = newValue
-                    return node
-                })
             }
-            get { _abbr }
+            if case let .argument(abbr, _, _) = content {
+                return abbr != nil ? true : false
+            }
+            return false
         }
         
-        
-        var maxLength: Int {
+        func _maxLength(abbr: Bool) -> Int {
             var maxLength = 0
             if subnodes.count > 0 {
                 maxLength = subnodes.reduce(maxLength) { (result, node) -> Int in
-                    return max(result, node.maxLength)
+                    return max(result, node._maxLength(abbr: abbr))
                 }
             }
             var currentLength = 0
@@ -105,13 +51,17 @@ public struct CocoaPodsHelper: HelpProvider {
             case .subcommand(let left, _):
                 return left.count + 2
             case .argument(_, let keyed, _):
-                if self.abbr {
+                if abbr {
                     currentLength = keyed.count + 5
                 } else {
                     currentLength = keyed.count + 2
                 }
             }
             return max(currentLength, maxLength)
+        }
+        
+        var maxLength: Int {
+            _maxLength(abbr: self.abbr)
         }
         
         enum Content {
@@ -239,20 +189,20 @@ public struct CocoaPodsHelper: HelpProvider {
         case .newline:
             string = ""
         case .section(let title, let space):
-            string = self.title.build(title).description
+            string = "\(self.title.build(title))"
             let lines = root.subnodes.map { (node) -> String in
                 self.toString(from: node, abbr: abbr, maxLength: maxLength)
             }
             string = string + "\n\n" + lines.joined(separator: space ? "\n\n" : "\n")
         case .commandUsage(let cmd):
-            string = HELP_TAB + "$ " + self.green.build(cmd.joined(separator: " ")).description
+            string = HELP_TAB + "$ " + "\(green.build(cmd.joined(separator: " ")))"
         case .commandDetail(let detail):
             string = HELP_TAB + "  " + detail
         case .subcommand(let left, let right):
-            string = HELP_TAB + green.build(toMaxLength("+ " + left, length: maxLength)).description + "   " + (right ?? "")
+            string = HELP_TAB + "\(green.build(toMaxLength("+ " + left, length: maxLength)))" + "   " + (right ?? "")
         case .argument(let _abbr, let keyed, let help):
             let abbrStr = abbr ? ((_abbr != nil) ? "-\(_abbr!)|" : "   ") : ""
-            string = HELP_TAB + blue.build(toMaxLength(abbrStr + "--" + keyed, length: maxLength)).description + "   " + (help ?? "")
+            string = HELP_TAB + "\(blue.build(toMaxLength(abbrStr + "--" + keyed, length: maxLength)))" + "   " + (help ?? "")
         }
         return string
     }
