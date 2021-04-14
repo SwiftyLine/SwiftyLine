@@ -65,3 +65,40 @@ extension String {
         return abbrs
     }
 }
+
+public protocol StringConvertable {
+    
+    init?(_ string: String)
+    
+    var rawString: String { get }
+    
+}
+
+extension StringConvertable {
+    
+    public var rawString: String { "\(self)" }
+    
+}
+
+extension String: StringConvertable {
+    init?(string: String) {
+        self = string
+    }
+}
+
+extension Int: StringConvertable {}
+extension Int8: StringConvertable {}
+extension Int16: StringConvertable {}
+extension Int32: StringConvertable {}
+extension Int64: StringConvertable {}
+
+extension UInt: StringConvertable {}
+extension UInt8: StringConvertable {}
+extension UInt16: StringConvertable {}
+extension UInt32: StringConvertable {}
+extension UInt64: StringConvertable {}
+
+extension Float: StringConvertable {}
+extension Double: StringConvertable {}
+
+extension Bool: StringConvertable {}
