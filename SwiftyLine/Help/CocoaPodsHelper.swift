@@ -7,7 +7,11 @@
 
 import Foundation
 
-let HELP_TAB = "    "
+let HELP_TAB            = "    "
+let HELP_ABBR_SEP       = ", "
+let HELP_ABBR_PREFIX    = "-"
+let HELP_KEY_PREFIX     = "--"
+let HELP_ABBR_EMPTY     = "    "
 
 public struct CocoaPodsHelper: HelpProvider {
     
@@ -52,9 +56,9 @@ public struct CocoaPodsHelper: HelpProvider {
                 return left.count + 2
             case .argument(_, let keyed, _):
                 if abbr {
-                    currentLength = keyed.count + 5
+                    currentLength = HELP_ABBR_PREFIX.count + 1 + HELP_ABBR_SEP.count + HELP_KEY_PREFIX.count + keyed.count
                 } else {
-                    currentLength = keyed.count + 2
+                    currentLength = HELP_KEY_PREFIX.count + keyed.count
                 }
             }
             return max(currentLength, maxLength)
@@ -201,8 +205,8 @@ public struct CocoaPodsHelper: HelpProvider {
         case .subcommand(let left, let right):
             string = HELP_TAB + "\(green.build(toMaxLength("+ " + left, length: maxLength)))" + "   " + (right ?? "")
         case .argument(let _abbr, let keyed, let help):
-            let abbrStr = abbr ? ((_abbr != nil) ? "-\(_abbr!)|" : "   ") : ""
-            string = HELP_TAB + "\(blue.build(toMaxLength(abbrStr + "--" + keyed, length: maxLength)))" + "   " + (help ?? "")
+            let abbrStr = abbr ? ((_abbr != nil) ? "\(HELP_ABBR_PREFIX)\(_abbr!)\(HELP_ABBR_SEP)" : HELP_ABBR_EMPTY) : ""
+            string = HELP_TAB + "\(blue.build(toMaxLength(abbrStr + HELP_KEY_PREFIX + keyed, length: maxLength)))" + "   " + (help ?? "")
         }
         return string
     }
