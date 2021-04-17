@@ -20,6 +20,69 @@ it, simply add the following line to your Podfile:
 pod 'SwiftyLine'
 ```
 
+## Usage
+
+### 1. Construct Command & Parse Argument
+
+```swift
+import SwiftyLine
+
+struct MyCommand: Command {
+    mutating run() throws -> Int {
+        // do your job
+        print("Hello SwiftyLine.\n")
+        return 0
+    }
+}
+
+MyCommand.main()
+
+// In Shell:
+//
+// % my-command
+// Hello SwiftyLine.
+//
+```
+
+### 2. Subcommand
+
+```swift
+import SwiftyLine
+
+struct MyCommand: Command {
+
+    static configuration: CommandConfiguration {
+        var configuration = CommandConfiguration()
+        configuration.subcommands = [MySubcommand.self]
+        return configuration
+    }
+
+    mutating run() throws -> Int {
+        // do your job
+        print("Hello SwiftyLine.\n")
+        return 0
+    }
+}
+
+struct MySubcommand: Command {
+    mutating run() throws -> Int {
+        print("Hello subcommand.\n")
+        return 0
+    }
+}
+
+MyCommand.main()
+
+// In Shell:
+//
+// % my-command
+// Hello SwiftyLine.
+//
+// % my-command my-subcommand
+// Hello subcommand.
+//
+```
+
 ## Author
 
 Magic-Unique, 516563564@qq.com
