@@ -14,6 +14,15 @@ public enum ArgumentKey {
     case named(String?)
 }
 
+protocol ComponentInfoProvider {
+    func makeSet(key: String) -> ComponentInfo
+}
+
+enum ArgumentValue<T> {
+    case define
+    case value(T)
+}
+
 public class ArgumentConfiguration {
     
     private var _key: ArgumentKey = .named(nil)
@@ -39,6 +48,9 @@ public class ArgumentConfiguration {
         return true
     }
     
+    var optional = false
+    
+    
     @discardableResult public func keyed(_ key: ArgumentKey) -> Self { _key = key; return self }
     @discardableResult public func keyed(_ key: String) -> Self { keyed(.named(key)) }
     public var noKey: Self { keyed(.null) }
@@ -46,6 +58,23 @@ public class ArgumentConfiguration {
     @discardableResult public func abbr(_ abbr: Character) -> Self { self.abbr = abbr; return self }
     
     @discardableResult public func help(_ help: String) -> Self { self.help = help; return self }
+    
+    func toInfo(originKey: String) -> ComponentInfo {
+        if case let .named(key) = self.key {
+            var info = ArgumentInfo(key: key ?? originKey)
+            info.optional = self.optional
+            info.abbr = self.abbr
+            info.help = self.help
+            info.originKey = originKey
+            return info
+        } else {
+            var info = ValueInfo(key: originKey)
+            info.optional = self.optional
+            info.help = self.help
+            info.originKey = originKey
+            return info
+        }
+    }
     
 }
 
@@ -57,9 +86,19 @@ extension ArgumentConfiguration { public var isPlaceholder: Bool { return self i
 // MARK: - Require
 
 @propertyWrapper
-public struct Require: Decodable {
+public struct Require<T:StringConvertable>: Decodable, ComponentInfoProvider {
     
-    public var wrappedValue: String = ""
+    var _wrappedValue: ArgumentValue<T> = .define
+    
+    public var wrappedValue: T {
+        set { _wrappedValue = .value(newValue) }
+        get {
+            if case let .value(v) = _wrappedValue {
+                return v
+            }
+            fatalError("The property is not init.")
+        }
+    }
     
     public var configuration: ArgumentConfiguration = PlaceholderConfiguration()
     
@@ -69,7 +108,9 @@ public struct Require: Decodable {
     
     public init(from decoder: Decoder) throws {
         let single = decoder as! ArgumentDecoder
-        self.wrappedValue = single.value as! String
+        let value = single.value as! String
+        let _value = T(value)
+        self.wrappedValue = _value!
     }
     
     public init(key: ArgumentKey? = nil, abbr: Character? = nil, help: String? = nil) {
@@ -87,19 +128,34 @@ public struct Require: Decodable {
             return configuration
         })
     }
+    
+    func makeSet(key: String) -> ComponentInfo {
+        return configuration.toInfo(originKey: key)
+    }
 }
 
 // MARK: - Optional
 
 @propertyWrapper
-public struct Optional: Decodable {
+public struct Optional<T:StringConvertable>: Decodable, ComponentInfoProvider {
     
-    public var wrappedValue: String?
+    var _wrappedValue: ArgumentValue<T> = .define
+    
+    public var wrappedValue: T? {
+        set { _wrappedValue = .value(newValue!) }
+        get {
+            if case let .value(v) = _wrappedValue {
+                return v
+            }
+            return nil
+        }
+    }
     
     public var configuration: ArgumentConfiguration = PlaceholderConfiguration()
     
     public init(_ building: () -> ArgumentConfiguration) {
         self.configuration = building()
+        self.configuration.optional = true
     }
     
     public init(key: ArgumentKey? = nil, abbr: Character? = nil, help: String? = nil) {
@@ -120,9 +176,15 @@ public struct Optional: Decodable {
     
     public init(from decoder: Decoder) throws {
         if let _decoder = decoder as? ArgumentDecoder {
-            self.wrappedValue = _decoder.value as? String
+            if let value = _decoder.value as? String {
+                if let _value = T(value) {
+                    self.wrappedValue = _value
+                }
+            }
         }
     }
+    
+    func makeSet(key: String) -> ComponentInfo { configuration.toInfo(originKey: key) }
 }
 
 // MARK: - Flag
@@ -140,10 +202,18 @@ public class FlagConfiguration {
     @discardableResult public func abbr(_ abbr: Character) -> Self { self.abbr = abbr; return self }
     
     @discardableResult public func help(_ help: String) -> Self { self.help = help; return self }
+    
+    func toInfo(originKey: String) -> FlagInfo {
+        var info = FlagInfo(key: self.key ?? originKey)
+        info.abbr = self.abbr
+        info.help = self.help
+        info.originKey = originKey
+        return info
+    }
 }
 
 @propertyWrapper
-public struct Flag: Decodable {
+public struct Flag: Decodable, ComponentInfoProvider {
     
     public var wrappedValue: Bool = false
     
@@ -166,4 +236,6 @@ public struct Flag: Decodable {
         configuration.abbr = abbr
         self.configuration = configuration
     }
+    
+    func makeSet(key: String) -> ComponentInfo { configuration.toInfo(originKey: key) }
 }

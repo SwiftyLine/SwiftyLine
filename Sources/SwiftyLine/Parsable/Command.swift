@@ -17,7 +17,7 @@ public protocol Command: Decodable {
     
     static var configuration: CommandConfiguration { get }
     
-    func main() throws;
+    mutating func main() throws;
     
     init()
 }
@@ -57,8 +57,8 @@ public extension Command {
             for command in commandPath {
                 commandType = commandType.subcommand(for: command)!
             }
-            let cmd = try? commandType.init(from: decoder)
-            try? cmd?.main()
+            var cmd = try commandType.init(from: decoder)
+            try cmd.main()
         }
     }
     

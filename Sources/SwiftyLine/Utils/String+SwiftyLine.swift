@@ -74,9 +74,9 @@ public protocol StringConvertable {
     
 }
 
-extension StringConvertable {
+public extension StringConvertable {
     
-    public var rawString: String { "\(self)" }
+    var rawString: String { "\(self)" }
     
 }
 
@@ -84,6 +84,41 @@ extension String: StringConvertable {
     init?(string: String) {
         self = string
     }
+}
+
+extension Swift.Optional: StringConvertable where Wrapped: StringConvertable {
+  public init?(_ string: String) {
+    if let value = Wrapped(string) {
+      self = value
+    } else {
+      return nil
+    }
+  }
+  
+  public var defaultValueDescription: String {
+    guard let value = self else {
+      return "none"
+    }
+    return "\(value)"
+  }
+}
+
+extension RawRepresentable where Self: StringConvertable, RawValue: StringConvertable {
+  public init?(_ string: String) {
+    if let value = RawValue(string) {
+      self.init(rawValue: value)
+    } else {
+      return nil
+    }
+  }
+}
+
+// MARK: LosslessStringConvertible
+
+extension LosslessStringConvertible where Self: StringConvertable {
+  public init?(argument: String) {
+    self.init(argument)
+  }
 }
 
 extension Int: StringConvertable {}

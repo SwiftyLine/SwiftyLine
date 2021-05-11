@@ -39,29 +39,32 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'Cocoa'
   # s.dependency 'AFNetworking', '~> 2.3'
   
-  s.subspec 'Operation' do |ss|
-      ss.source_files = 'SwiftyLine/Operation/**/*.swift'
+  s.subspec 'Utils' do |ss|
+      ss.source_files = 'Sources/SwiftyLine/Utils/**/*.swift'
   end
   
-  s.subspec 'Utils' do |ss|
-      ss.source_files = 'SwiftyLine/Utils/**/*.swift'
+  s.subspec 'Operation' do |ss|
+      ss.source_files = 'Sources/SwiftyLine/Operation/**/*.swift'
+      ss.dependency 'SwiftyLine/Utils'
   end
   
   s.subspec 'Info' do |ss|
-      ss.source_files = 'SwiftyLine/Info/**/*.swift'
+      ss.source_files = 'Sources/SwiftyLine/Info/**/*.swift'
       ss.dependency 'SwiftyLine/Operation'
+      ss.dependency 'SwiftyLine/Utils'
   end
   
   s.subspec 'Help' do |ss|
-      ss.source_files = 'SwiftyLine/Help/**/*.swift'
+      ss.source_files = 'Sources/SwiftyLine/Help/**/*.swift'
       ss.dependency 'SwiftyLine/Operation'
       ss.dependency 'SwiftyLine/Info'
   end
   
   s.subspec 'Parsable' do |ss|
-      ss.source_files = 'SwiftyLine/Parsable/**/*.swift'
+      ss.source_files = 'Sources/SwiftyLine/Parsable/**/*.swift'
       ss.dependency 'SwiftyLine/Info'
       ss.dependency 'SwiftyLine/Utils'
+      ss.dependency 'SwiftyLine/Help'
   end
   
 end

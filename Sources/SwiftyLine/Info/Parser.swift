@@ -9,18 +9,18 @@ import Foundation
 
 public struct ParseResult {
     
-    var command: CommandInfo
+    public var command: CommandInfo
     
-    var commandPath = [String]()
+    public var commandPath = [String]()
     
-    var arguments = [String: String]()
+    public var arguments = [String: String]()
     
-    var flags = [String]()
+    public var flags = [String]()
     
-    var keyedValues = [String:String]()
-    var unkeyValues = [String]()
+    public var keyedValues = [String:String]()
+    public var unkeyValues = [String]()
     
-    var error: ParseError?
+    public var error: ParseError?
     
     public func flag(_ flag: FlagInfo) -> Bool { flags.contains(flag.key) }
     
@@ -31,7 +31,7 @@ extension ParseResult {
     mutating func valid() -> ParseResult {
         for argument in self.command.arguments {
             if argument.optional == false {
-                if arguments[argument.originKey] == nil {
+                if arguments[argument.key] == nil {
                     error = ParseError.missingRequiredArguments(argument)
                     break
                 }
@@ -75,7 +75,7 @@ extension CommandInfo {
                                 break
                             } else {
                                 let value = arguments.removeFirst()
-                                result.arguments[arg.originKey] = value
+                                result.arguments[arg.key] = value
                             }
                         }
                         else if let flg = info as? FlagInfo {
@@ -94,7 +94,7 @@ extension CommandInfo {
                             break
                         } else {
                             let value = arguments.removeFirst()
-                            result.arguments[arg.originKey] = value
+                            result.arguments[arg.key] = value
                         }
                     }
                     else if let flg = info as? FlagInfo {
@@ -106,7 +106,7 @@ extension CommandInfo {
             // value
             if result.keyedValues.count < targetCmd.values.count {
                 let info = targetCmd.values[result.keyedValues.count]
-                result.keyedValues[info.originKey] = current
+                result.keyedValues[info.key] = current
             } else {
                 result.unkeyValues.append(current)
             }
