@@ -208,7 +208,7 @@ public struct CocoaPodsHelper: HelpProvider {
             let abbrStr = abbr ? ((_abbr != nil) ? "\(HELP_ABBR_PREFIX)\(_abbr!)\(HELP_ABBR_SEP)" : HELP_ABBR_EMPTY) : ""
             string = HELP_TAB + "\(blue.build(toMaxLength(abbrStr + HELP_KEY_PREFIX + keyed, length: maxLength)))" + "   " + (help ?? "")
         }
-        return string
+        return string + "\n"
     }
     
     func toMaxLength(_ string: String, length: Int) -> String {

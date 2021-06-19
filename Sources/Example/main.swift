@@ -8,11 +8,9 @@
 import Foundation
 import SwiftyLine
 
-struct Path: StringConvertable {
-    let string: String
-    
-    init?(_ string: String) {
-        self.string = string
+extension Path: StringConvertable {
+    public init?(_ string: String) {
+        self.init(string: string)
     }
 }
 
@@ -39,12 +37,12 @@ struct MyCommand: Command {
         return configuration
     }
     
-    @Require(key: .named("fakenamaaae"), abbr: "a", help: "nihao")
-    var name: Int
-    
-    @Require(key: .null, help: "Value")
-    var subname: String
-    
+//    @Require(key: .named("fakenamaaae"), abbr: "a", help: "nihao")
+//    var name: Int
+//
+//    @Require(key: .null, help: "Value")
+//    var subname: String
+//
     @Require()
     var path: Path
     
@@ -61,8 +59,8 @@ struct MyCommand: Command {
     
     func main() throws {
         print("Custom path = \(path)")
-        print("Input name = \(name)")
-        print("Sub name = \(subname)")
+//        print("Input name = \(name)")
+//        print("Sub name = \(subname)")
         if let body = self.body1 {
             print("Input body = \(body)")
         }

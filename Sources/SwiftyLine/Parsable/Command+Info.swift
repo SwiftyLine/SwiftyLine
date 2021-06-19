@@ -70,24 +70,24 @@ extension ComponentInfo {
 
 extension ParseResult {
     
-    func originKeyedResult(command: CommandInfo) -> ParseResult {
-        var newResult = self
-        
-        var keyMap = [String: String]()
-        for info in command.arguments {
-            keyMap[info.key] = info.originKey
-        }
-        let arguments = newResult.arguments
-        for (key, value) in arguments {
-            // MARK: - TODO: awefji
-            let originKey = keyMap[key]!;
-            if keyMap[key] == key {
-                continue
-            }
-            newResult.arguments[]
-            newResult.arguments[key] = nil
-        }
-        
-    }
+//    func originKeyedResult(command: CommandInfo) -> ParseResult {
+//        var newResult = self
+//        
+//        var keyMap = [String: String]()
+//        for info in command.arguments {
+//            keyMap[info.key] = info.originKey
+//        }
+//        let arguments = newResult.arguments
+//        for (key, value) in arguments {
+//            // MARK: - TODO: awefji
+//            let originKey = keyMap[key]!;
+//            if keyMap[key] == key {
+//                continue
+//            }
+//            newResult.arguments[]
+//            newResult.arguments[key] = nil
+//        }
+//        
+//    }
     
 }
