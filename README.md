@@ -13,11 +13,16 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Installation
 
-SwiftyLine is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+**CocoaPods**
 
 ```ruby
 pod 'SwiftyLine'
+```
+
+**Swift Package Manager**
+
+```swift
+.package(url: "https://gitee.com/SwiftyLine/SwiftyLine", from: "0.1.0"),
 ```
 
 ## Usage
@@ -28,14 +33,14 @@ pod 'SwiftyLine'
 import SwiftyLine
 
 struct MyCommand: Command {
-    mutating run() throws -> Int {
+    mutating main() throws -> Int {
         // do your job
         print("Hello SwiftyLine.\n")
         return 0
     }
 }
 
-MyCommand.main()
+try MyCommand.main()
 
 // In Shell:
 //
@@ -57,7 +62,7 @@ struct MyCommand: Command {
         return configuration
     }
 
-    mutating run() throws -> Int {
+    mutating main() throws -> Int {
         // do your job
         print("Hello SwiftyLine.\n")
         return 0
@@ -65,7 +70,7 @@ struct MyCommand: Command {
 }
 
 struct MySubcommand: Command {
-    mutating run() throws -> Int {
+    mutating main() throws -> Int {
         print("Hello subcommand.\n")
         return 0
     }
