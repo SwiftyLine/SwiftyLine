@@ -38,6 +38,11 @@ public extension Command {
         return nil
     }
     
+    mutating func main() throws {
+        let info = CommandInfo(command: Self.self)
+        Helper.printBanner(for: info)
+    }
+    
     static func main(_ arguments: [String] = CommandLine.arguments) throws {
         let info = CommandInfo(command: Self.self)
         let result = info.parse(argv: arguments)

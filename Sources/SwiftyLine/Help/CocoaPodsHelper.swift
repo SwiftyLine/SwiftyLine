@@ -179,7 +179,7 @@ public struct CocoaPodsHelper: HelpProvider {
         root.subnodes.append(options)
         
         //        return sections.filter({ $0.count > 0 }).joined(separator: "\n")
-        return toString(from: root, abbr: root.abbr, maxLength: root.maxLength)
+        return toString(from: root, abbr: root.abbr, maxLength: root.maxLength) + "\n"
     }
     
     func toString(from root: Node, abbr: Bool, maxLength: Int) -> String {
@@ -208,7 +208,7 @@ public struct CocoaPodsHelper: HelpProvider {
             let abbrStr = abbr ? ((_abbr != nil) ? "\(HELP_ABBR_PREFIX)\(_abbr!)\(HELP_ABBR_SEP)" : HELP_ABBR_EMPTY) : ""
             string = HELP_TAB + "\(blue.build(toMaxLength(abbrStr + HELP_KEY_PREFIX + keyed, length: maxLength)))" + "   " + (help ?? "")
         }
-        return string + "\n"
+        return string
     }
     
     func toMaxLength(_ string: String, length: Int) -> String {
